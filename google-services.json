@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "207077854831",
+    "firebase_url": "https://idiomas-1583445828072.firebaseio.com",
+    "project_id": "idiomas-1583445828072",
+    "storage_bucket": "idiomas-1583445828072.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207077854831:android:89658fbcbf2415d5d9079a",
+        "android_client_info": {
+          "package_name": "nihongo.idiomas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "207077854831-cm9o5k7vcusoepcjcqugjk9kkfafac9t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAM8Rpu7WmHlgAsCXq0Xc1TrVLEjdduboY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "207077854831-cm9o5k7vcusoepcjcqugjk9kkfafac9t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,19 +1,24 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "Nihongo Idiomas",
+    "scheme": "nihongoidiomas",
+    "slug": "nihongo",
     "platforms": [
       "ios",
       "android",
       "web"
     ],
-    "version": "1.0.0",
+    "version": "0.0.1",
     "orientation": "portrait",
+    "androidStatusBar": {
+      "barStyle": "light-content",
+      "backgroundColor": "#808080"
+    },
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#808080"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -21,8 +26,21 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "android": {
+      "package": "nihongo.idiomas",
+      "googleServicesFile": "./google-services.json"
+    },
     "ios": {
       "supportsTablet": true
+    },
+    "web": {
+      "config": {
+        "firebase": {
+          "appId": "1:207077854831:web:2aad3b87ce3781c7d9079a",
+          "apiKey": "AIzaSyDEXgA3fHmE6YavA76Pa7JgqYIVZs0aKro",
+          "measurementId": "G-7W5GNSHXBK"
+        }
+      }
     }
   }
 }
