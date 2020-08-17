@@ -1,10 +1,11 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import { ScrollView, View1, View2 } from './style';
 
 export default function Container({ children, scroll=false, center=false }) {
 	if (scroll) {
 		return (
-			<ScrollView>
+			<ScrollView showsVerticalScrollIndicator={Platform.OS == 'web'}>
 				<View1>
 					<View2 center={center}>
 						{ children }

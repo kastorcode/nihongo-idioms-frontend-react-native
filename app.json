@@ -28,9 +28,12 @@
     ],
     "android": {
       "package": "nihongo.idiomas",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "versionCode": 1
     },
     "ios": {
+      "bundleIdentifier": "nihongo.idiomas",
+      "buildNumber": "0.0.1",
       "supportsTablet": true
     },
     "web": {

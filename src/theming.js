@@ -2,6 +2,7 @@ import React from 'react';
 import { StatusBar } from 'react-native';
 import { AppLoading } from 'expo';
 import { ThemeProvider } from 'styled-components';
+import useAds from './hooks/useAds';
 import useLoginStorage from './hooks/useLoginStorage';
 import useTheme from './hooks/useTheme';
 import useOnline from './hooks/useOnline';
@@ -14,6 +15,7 @@ import useAnalytics from './hooks/useAnalytics';
 import Routes from './routes';
 
 export default function Theming() {
+	useAds();
 	const login = useLoginStorage();
 	const theme = useTheme();
 	useOnline();

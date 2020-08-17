@@ -6,6 +6,7 @@ export const clientID = `207077854831-ncqrvt9c2u9s6dmgm4ppfijbrchv4kj7.apps.goog
 export const cryptoKEY = 'showdoIrandeDaTtEbayou';
 export const deepLink = Linking.makeUrl('/');
 export const redirectURI = `${encodeURIComponent('https://auth.expo.io/@anonymous/nihongo-afd2301f-f9d5-4ec1-8e16-9283176b46d7')}`;
+export const startappID = `207556779`;
 export const DIR_VOCABULARY = `${FileSystem.documentDirectory}vocabulary`;
 export const DIR_SHADOWING = `${FileSystem.documentDirectory}shadowing`;
 export const DB_NAME = `phrases`;

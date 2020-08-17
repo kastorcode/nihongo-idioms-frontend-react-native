@@ -1,23 +1,31 @@
-import React from 'react';
-import { Pressable, View } from 'react-native';
+import React, { useState } from 'react';
+import { View, TouchableWithoutFeedback } from 'react-native';
 
 export default function ClickAnimation({ style, onPress, children, loading=false }) {
+	const [value, setValue] = useState([0, 2]);
+
+	function animate() {
+		setValue([value[1], value[0]]);
+	}
+
 	return (
-		<Pressable
-			onPress={onPress}
-			disabled={loading}
-			style={({pressed}) => [{
-				left: pressed ? 2 : 0,
-			  top: pressed ? 2 : 0
+		<View
+			style={[style, {
+		  	left: value[0],
+		  	top: value[0],
+		  	opacity: loading ? 0.6 : 1
 			}]}
 		>
-			<View
-				style={[style, {
-			  	opacity: loading ? 0.6 : 1
-				}]}
+			<TouchableWithoutFeedback
+				onPressIn={animate}
+				onPress={onPress}
+				onPressOut={animate}
+				disabled={loading}
 			>
-				{ children }
-			</View>
-		</Pressable>
+				<View>
+					{ children }
+				</View>
+			</TouchableWithoutFeedback>
+		</View>
 	);
 }

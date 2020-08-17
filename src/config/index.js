@@ -5,6 +5,7 @@ export const clientID = `207077854831-ncqrvt9c2u9s6dmgm4ppfijbrchv4kj7.apps.goog
 export const cryptoKEY = 'orewahoKAgedazoU_';
 export const deepLink = Linking.makeUrl('/');
 export const redirectURI = deepLink;
+export const startappID = `207556779`;
 export const firebaseConfig = {
   apiKey: 'AIzaSyDEXgA3fHmE6YavA76Pa7JgqYIVZs0aKro',
   authDomain: 'idiomas-1583445828072.firebaseapp.com',

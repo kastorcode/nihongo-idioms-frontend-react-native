@@ -1,9 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FlatList } from 'react-native';
 import { withTheme } from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { Menu, MenuTrigger, MenuOptions, MenuOption, renderers } from 'react-native-popup-menu';
+import * as WebBrowser from 'expo-web-browser';
+import Carousel,{ Pagination } from 'react-native-snap-carousel';
+import { baseURL } from '../../config';
 import api from '../../services/api';
 import { changeUserCourse } from '../../store/user/actions';
 import { offlineMessage } from '../../utils';
@@ -12,14 +15,66 @@ import Background from '../../components/Background';
 import Container from '../../components/Container';
 import { MenuStyle, MenuTriggerStyles, MenuOptionsStyles,
 	CourseMenuTitle, Cards, Card, CardHeader, CardHeaderText, CardBody,
-	CardBodyText } from './style';
+	CardBodyText, MainAd, MainAdImage } from './style';
 
 function UserMain({ theme }) {
-	const { online, revisions, notifications } = useSelector(store => store);
-	const { session } = useSelector(store => store.auth);
-	const { course, myCourses } = useSelector(store => store.user);
+	const {
+		online, revisions, notifications,
+		auth: { session },
+		user: { course, myCourses }
+	} = useSelector(store => store);
+	const [mainAd, setMainAd] = useState(null);
+	const [index, setIndex] = useState(0);
+	const carouselRef = useRef();
 	const dispatch = useDispatch();
 	const navigation = useNavigation();
+
+	function carousel() {
+		return (
+			<Carousel
+				ref={carouselRef}
+	  		data={mainAd}
+	      sliderWidth={375}
+	      itemWidth={375}
+	      loop={true}
+	      autoplay={true}
+	      autoplayInterval={30000}
+	      onSnapToItem={index => setIndex(index)}
+	      renderItem={({item}) => (
+	      	<MainAd onPress={() => handleMainAd(item.id)} activeOpacity={0.8}>
+	  				<MainAdImage source={item.img} resizeMode='stretch' theme={theme} />
+	  			</MainAd>
+	      )}
+	  	/>
+		);
+	}
+
+	function pagination() {
+		return (
+	    <Pagination
+	    	carouselRef={carouselRef}
+	    	tappableDots={true}
+	      dotsLength={mainAd.length}
+	      activeDotIndex={index}
+	      activeOpacity={0.8}
+	      inactiveDotOpacity={1}
+	      inactiveDotScale={1}
+	      dotStyle={{
+	        width: 12,
+	        height: 12,
+	        borderRadius: 6,
+	        marginHorizontal: 4,
+	        backgroundColor: theme.header.menu.bg
+	      }}
+	      containerStyle={{
+	      	paddingVertical: 28
+	      }}
+	      inactiveDotStyle={{
+	      	backgroundColor: theme.bar.bg
+	      }}
+	    />
+		);
+	}
 
 	async function changeCourse(course) {
 		dispatch(changeUserCourse(course));
@@ -34,11 +89,31 @@ function UserMain({ theme }) {
 		}
 	}
 
+	async function handleMainAd(id) {
+		const link = `${baseURL}/mainAdClick?id=${id}`;
+		WebBrowser.openBrowserAsync(link);
+	}
+
+	async function getMainAd() {
+		api.get(`/getMainAd`)
+		.then(response => {
+			if (response.data.ad.length) {
+				setMainAd(response.data.ad);
+			}
+		});
+	}
+
+	useEffect(() => {
+		if (!mainAd && online) {
+			getMainAd();
+		}
+	}, [online]);
+
   return (
   	<Background>
 	  	<Header />
 
-	  	<Container center={true}>
+	  	<Container scroll={mainAd} center={!mainAd}>
 		  	<Menu renderer={renderers.Popover} style={MenuStyle(theme)}>
 		  		<CourseMenuTitle theme={theme}>Curso</CourseMenuTitle>
 	      	<MenuTrigger customStyles={MenuTriggerStyles(theme)} text={course.full} />
@@ -71,6 +146,12 @@ function UserMain({ theme }) {
 		    		</CardBody>
 		    	</Card>
 		    </Cards>
+
+		    { mainAd ? [
+		    	pagination(),
+		    	carousel(),
+		    	pagination()
+		    ] : null }
 		  </Container>
 	  </Background>
   );

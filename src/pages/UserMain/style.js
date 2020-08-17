@@ -75,3 +75,15 @@ export const CardBodyText = styled.Text`
 	font-size: 36px;
 	color: ${({theme}) => theme.box.header};
 `;
+
+export const MainAd = styled.TouchableOpacity`
+	width: 100%;
+	max-width: 375px;
+	height: 667px;
+`;
+
+export const MainAdImage = styled.Image`
+	width: 100%;
+	height: 100%;
+	background-color: ${({theme}) => theme.text};
+`;
