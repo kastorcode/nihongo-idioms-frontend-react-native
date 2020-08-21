@@ -340,7 +340,7 @@ function Routes({ theme }) {
       <NavigationContainer ref={navigationRef}>
         <Drawer.Navigator
           initialRouteName='home'
-          backBehavior='history'
+          backBehavior='initialRoute'
           unmountInactiveRoutes={true}
           drawerStyle={{ width:0, height:0 }}
         >

@@ -1,10 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Carousel from 'react-native-snap-carousel';
-import * as WebBrowser from 'expo-web-browser';
-import * as AuthSession from 'expo-auth-session';
 import { EventRegister } from 'react-native-event-listeners';
-import { clientID, redirectURI, deepLink } from '../../config';
+import Constants from 'expo-constants';
+import { clientID, redirectURI } from '../../config';
 import api from '../../services/api';
 import { changeAds } from '../../store/ads/actions';
 import { authLogin } from '../../store/auth/actions';
@@ -15,12 +14,10 @@ import ClickAnimation from '../../components/ClickAnimation';
 import letters from '../../assets/images/letters.png';
 import logo from '../../assets/images/logo-transparent.png';
 import { Container, BackgroundImage, Header, HeaderBox1,
-	Logo, Title, HeaderBox2, LoginButton, Body, Phrase } from './style';
-
-WebBrowser.maybeCompleteAuthSession();
+	Logo, Title, HeaderBox2, LoginButton, Body, Phrase, Browser } from './style';
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [load, setLoad] = useState('H');
   const { online } = useSelector(store => store);
 	const [phrases] = useState([
 		{ text: 'Aprenda um novo idioma com a melhor metodologia do mundo!' },
@@ -33,6 +30,13 @@ export default function Home() {
 		{ title: 'É GRÁTIS!', text: 'Entre com sua conta do Google.' }
 	]);
   const dispatch = useDispatch();
+  const userAgent = useRef();
+  const uri = `https://accounts.google.com/o/oauth2/v2/auth?` +
+              `&client_id=${clientID}` +
+              `&redirect_uri=${redirectURI}` +
+              `&response_type=id_token` +
+              `&scope=openid%20email%20profile` +
+              `&nonce=n-0S6_WzA2Mj`;
 
   function loginRequest(googleToken) {
     return new Promise((resolve, reject) => {
@@ -46,83 +50,98 @@ export default function Home() {
         resolve();
       })
       .catch(() => {
-        setIsLoading(false);
+        setLoad('H');
         alert('Falha ao logar, por favor tente novamente.');
         reject();
       });
     });
   }
 
-  async function handleLogin() {
-    if (!online) {
-      alert('Você está offline! É necessário conexão com a internet para entrar na plataforma utilizando sua conta do Google.');
-      return;
+  async function onNavigationStateChange({ url }) {
+    if (url.startsWith('https://localhost')) {
+      const googleToken = url.split('id_token=')[1].split('&', 1)[0];
+      if (googleToken) {
+        setLoad('L');
+        loginRequest(googleToken);
+      }
+      else {
+        alert('A tentativa de login fracassou. Por favor tente novamente.');
+      }
     }
+  }
 
-    const result = await AuthSession.startAsync({
-      authUrl:
-        `https://accounts.google.com/o/oauth2/v2/auth?` +
-        `&client_id=${clientID}` +
-        `&redirect_uri=${redirectURI}` +
-        `&response_type=id_token` +
-        `&scope=openid%20email%20profile` +
-        `&nonce=n-0S6_WzA2Mj`,
-      returnUrl: deepLink
-    });
-
-    if (result.type == 'success') {
-      setIsLoading(true);
-      loginRequest(result.params.id_token);
+  async function handleLogin() {
+    if (online) {
+      setLoad('B');
     }
     else {
-      alert('A tentativa de login fracassou. Tente novamente ou use um navegador diferente.');
+      alert('Você está offline! É necessário conexão com a internet para entrar na plataforma utilizando sua conta do Google.');
     }
   }
 
-  if (isLoading) {
-    return (
-      <Background>
-        <Loading />
-      </Background>
-    );
-  }
-  else {
-    return (
-      <Container>
-        <BackgroundImage source={letters} resizeMode='stretch' />
+  useEffect(() => {
+    Constants.getWebViewUserAgentAsync().then(str => {
+      userAgent.current = str;
+    });
+  }, []);
 
-        <Header>
-          <HeaderBox1>
-            <Logo source={logo} />
-            <Title>NIHONGO IDIOMAS</Title>
-          </HeaderBox1>
+  switch (load) {
+    case 'H': {
+      return (
+        <Container>
+          <BackgroundImage source={letters} resizeMode='stretch' />
 
-          <HeaderBox2>
-            <ClickAnimation
-              onPress={handleLogin}
-            >
-              <LoginButton>Login</LoginButton>
-            </ClickAnimation>
-          </HeaderBox2>
-        </Header>
+          <Header>
+            <HeaderBox1>
+              <Logo source={logo} />
+              <Title>NIHONGO IDIOMAS</Title>
+            </HeaderBox1>
 
-        <Body>
-          <Carousel
-            data={phrases}
-            sliderWidth={360}
-            itemWidth={360}
-            loop={true}
-            autoplay={true}
-            autoplayInterval={4000}
-            renderItem={({item}) => (
-              <>
-              { item.title && (<Phrase>{item.title}</Phrase>) }
-              <Phrase>{item.text}</Phrase>
-              </>
-            )}
-          />
-        </Body>
-      </Container>
-    );
+            <HeaderBox2>
+              <ClickAnimation
+                onPress={handleLogin}
+              >
+                <LoginButton>Login</LoginButton>
+              </ClickAnimation>
+            </HeaderBox2>
+          </Header>
+
+          <Body>
+            <Carousel
+              data={phrases}
+              sliderWidth={360}
+              itemWidth={360}
+              loop={true}
+              autoplay={true}
+              autoplayInterval={4000}
+              renderItem={({item}) => (
+                <>
+                { item.title && (<Phrase>{item.title}</Phrase>) }
+                <Phrase>{item.text}</Phrase>
+                </>
+              )}
+            />
+          </Body>
+        </Container>
+      );
+    }
+
+    case 'B': {
+      return (
+        <Browser
+          userAgent={userAgent.current}
+          onNavigationStateChange={onNavigationStateChange}
+          source={{ uri }}
+        />
+      );
+    }
+
+    case 'L': {
+      return (
+        <Background>
+          <Loading />
+        </Background>
+      );
+    }
   }
 }

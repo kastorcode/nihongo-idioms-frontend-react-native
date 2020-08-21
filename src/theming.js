@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StatusBar } from 'react-native';
-import { AppLoading } from 'expo';
+import * as SplashScreen from 'expo-splash-screen';
 import { ThemeProvider } from 'styled-components';
 import useAds from './hooks/useAds';
 import useLoginStorage from './hooks/useLoginStorage';
@@ -26,7 +26,17 @@ export default function Theming() {
 	usePremium();
 	useAnalytics();
 
-	if (login && theme) {
+	useEffect(() => {
+		SplashScreen.preventAutoHideAsync();
+	}, []);
+
+	useEffect(() => {
+		if (login) {
+			SplashScreen.hideAsync();
+		}
+	}, [login]);
+
+	if (login) {
 		return (
 			<ThemeProvider theme={theme}>
 				<StatusBar backgroundColor={theme.header.bg} />
@@ -35,8 +45,6 @@ export default function Theming() {
 		);
 	}
 	else {
-  	return (
-  		<AppLoading />
-  	);
+  	return null;
   }
 }

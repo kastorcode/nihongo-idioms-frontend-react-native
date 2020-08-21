@@ -1,4 +1,5 @@
 import styled from 'styled-components/native';
+import { WebView } from 'react-native-webview';
 
 export const Container = styled.SafeAreaView`
 	flex: 1;
@@ -66,4 +67,10 @@ export const Phrase = styled.Text`
 	font-size: 28px;
 	color: #f2f2f2;
 	text-align: center;
+`;
+
+export const Browser = styled(WebView)`
+	width: 100%;
+	height: 100%;
+	background-color: #be0029;
 `;

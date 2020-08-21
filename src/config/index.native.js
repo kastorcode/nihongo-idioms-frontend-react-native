@@ -1,11 +1,10 @@
-import { Linking } from 'expo';
 import * as FileSystem from 'expo-file-system';
 
 export const baseURL = `http://192.168.0.11/nihongo-idiomas/backend`;
 export const clientID = `207077854831-ncqrvt9c2u9s6dmgm4ppfijbrchv4kj7.apps.googleusercontent.com`;
 export const cryptoKEY = 'showdoIrandeDaTtEbayou';
-export const deepLink = Linking.makeUrl('/');
-export const redirectURI = `${encodeURIComponent('https://auth.expo.io/@anonymous/nihongo-afd2301f-f9d5-4ec1-8e16-9283176b46d7')}`;
+export const deepLink = 'nihongoidiomas://';
+export const redirectURI = `${encodeURIComponent('https://localhost')}`;
 export const startappID = `207556779`;
 export const DIR_VOCABULARY = `${FileSystem.documentDirectory}vocabulary`;
 export const DIR_SHADOWING = `${FileSystem.documentDirectory}shadowing`;

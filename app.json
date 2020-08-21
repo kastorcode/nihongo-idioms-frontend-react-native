@@ -44,6 +44,7 @@
           "measurementId": "G-7W5GNSHXBK"
         }
       }
-    }
+    },
+    "entryPoint": "node_modules/expo/AppEntry.js"
   }
 }

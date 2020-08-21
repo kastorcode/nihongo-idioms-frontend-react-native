@@ -10,8 +10,11 @@ import { updateRevisions } from '../../store/revisions/actions';
 
 export default function useRevisions() {
   const [loaded, setLoaded] = useState(false);
-  const { revisions } = useSelector(store => store);
-	const { course } = useSelector(store => store.user);
+  const {
+    revisions,
+    auth: { logged },
+    user: { course }
+  } = useSelector(store => store);
 	const dispatch = useDispatch();
 
   const updateRevisionsStorage = () => {
@@ -80,7 +83,7 @@ export default function useRevisions() {
     clearRevisions();
   }, [course]);
 
-	if (!loaded && course) {
+	if (!loaded && logged) {
     setLoaded(true);
 		checkRevisions();
 	}

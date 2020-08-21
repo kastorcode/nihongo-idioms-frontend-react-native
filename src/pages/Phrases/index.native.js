@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { withTheme } from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
@@ -17,19 +17,18 @@ import Word from '../../components/Word';
 import { Original, Translation, Buttons, ShowButton, ButtonsBox, AgainButton,
 	TomorrowButton, OkButton, EmptyText } from './style';
 
-var queue;
-
 function Phrases({ route, navigation, theme }) {
 	const [isLoading, setIsLoading] = useState(true);
 	const { auto, course, repro } = useSelector(store => store.user);
 	const [phrase, setPhrase] = useState(null);
 	const [disabled, setDisabled] = useState(false);
-	const [yesterday] = useState(subtractDate(1));
-	const [today] = useState(calculateDate(0));
-	const [tomorrow] = useState(calculateDate(1));
-	const [last, setLast] = useState(0);
-	const [end, setEnd] = useState(false);
-	const [db] = useState(SQLite.openDatabase(DB_NAME));
+	const yesterday = useRef(subtractDate(1));
+	const today = useRef(calculateDate(0));
+	const tomorrow = useRef(calculateDate(1));
+	const last = useRef(0);
+	const end = useRef(false);
+	const db = useRef(SQLite.openDatabase(DB_NAME));
+	const queue = useRef([]);
 	const dispatch = useDispatch();
 	const { training, day } = route.params;
 
@@ -72,7 +71,7 @@ function Phrases({ route, navigation, theme }) {
 	async function checkEnd(length) {
 		return new Promise(resolve => {
 			if (!length || length < 10)
-				setEnd(true);
+				end.current = true;
 			resolve();
 		});
 	}
@@ -89,19 +88,19 @@ function Phrases({ route, navigation, theme }) {
 					}
 					case 1: {
 						return {
-							date: yesterday,
+							date: yesterday.current,
 							sql: `SELECT id, phrase, translation FROM ${DB_NAME} WHERE course = ? AND id > ? AND last_revision = ? LIMIT 10`
 						};
 					}
 					case 2: {
 						return {
-							date: today,
+							date: today.current,
 							sql: `SELECT id, phrase, translation FROM ${DB_NAME} WHERE course = ? AND id > ? AND last_revision = ? LIMIT 10`
 						};
 					}
 					case 3: {
 						return {
-							date: tomorrow,
+							date: tomorrow.current,
 							sql: `SELECT id, phrase, translation FROM ${DB_NAME} WHERE course = ? AND id > ? AND review = ? LIMIT 10`
 						};
 					}
@@ -111,8 +110,8 @@ function Phrases({ route, navigation, theme }) {
 				}
 			})();
 
-			db.transaction(tx => {
-				tx.executeSql(sql, day ? [course.short, last, date] : [course.short],
+			db.current.transaction(tx => {
+				tx.executeSql(sql, day ? [course.short, last.current, date] : [course.short],
 					(transaction, result) => {
 						const { length } = result.rows;
 						if (day)
@@ -120,14 +119,14 @@ function Phrases({ route, navigation, theme }) {
 
 						if (length) {
 							const array = result.rows._array;
-							setLast(array[length - 1].id);
-							queue = array.map(item => {
+							last.current = array[length - 1].id;
+							queue.current = array.map(item => {
 								item['repro'] = repro;
 								item['phrase'] = item['phrase'].split(' ');
 								item['sound'] = getSound(item['id']);
 								return item;
 							});
-							if (!phrase) setPhrase(queue.shift());
+							if (!phrase) setPhrase(queue.current.shift());
 						}
 
 						resolve();
@@ -143,22 +142,22 @@ function Phrases({ route, navigation, theme }) {
 
 	async function getPhrases() {
 		return new Promise((resolve, reject) => {
-			db.transaction(tx => {
+			db.current.transaction(tx => {
 				const sql = `SELECT id, phrase, translation, revisions, factor FROM ${DB_NAME} WHERE id > ? AND course = ? AND review < ? LIMIT 10`;
-				tx.executeSql(sql, [last, course.short, tomorrow],
+				tx.executeSql(sql, [last.current, course.short, tomorrow.current],
 					(transaction, result) => {
 						const { length } = result.rows;
 						checkEnd(length);
 						if (length) {
 							const array = result.rows._array;
-							setLast(array[length - 1].id);
-							queue = array.map(item => {
+							last.current = array[length - 1].id;
+							queue.current = array.map(item => {
 								item['repro'] = repro;
 								item['phrase'] = item['phrase'].split(' ');
 								item['sound'] = getSound(item['id']);
 								return item;
 							});
-							if (!phrase) setPhrase(queue.shift());
+							if (!phrase) setPhrase(queue.current.shift());
 						}
 						resolve();
 					},
@@ -180,42 +179,46 @@ function Phrases({ route, navigation, theme }) {
 
 	function handleAgain() {
 		setDisabled(false);
-		queue.push(phrase);
-		setPhrase(queue.shift());
+		queue.current.push(phrase);
+		setPhrase(queue.current.shift());
 	}
 
-	async function handleChoice(choice) {
+	function handleChoice(choice) {
 		return new Promise((resolve, reject) => {
 			setDisabled(false);
 			let draft = phrase;
-			setPhrase(queue.shift());
-			if (training) resolve();
+			setPhrase(queue.current.shift());
 
-			switch (choice) {
-				case 1: {
-					draft = backReview(draft);
-					break;
-				}
-				case 2: {
-					draft = nextReview(draft);
-					break;
-				}
+			if (training) {
+				resolve();
 			}
+			else {
+				switch (choice) {
+					case 1: {
+						draft = backReview(draft);
+						break;
+					}
+					case 2: {
+						draft = nextReview(draft);
+						break;
+					}
+				}
 
-			draft['revisions']++;
+				draft['revisions']++;
 
-			db.transaction(tx => {
-				const sql = `UPDATE ${DB_NAME} SET revisions = ?, factor = ?, review = ?, last_revision = ?, sync = ? WHERE id = ? AND course = ?`;
-				tx.executeSql(sql, [draft.revisions, draft.factor, draft.review, today, 1, draft.id, course.short],
-					() => {
-						dispatch(decrementRevisions());
-						resolve();
-					},
-					() => {
-						alert('A atualização da última frase falhou.');
-						reject();
-					});
-			});
+				db.current.transaction(tx => {
+					const sql = `UPDATE ${DB_NAME} SET revisions = ?, factor = ?, review = ?, last_revision = ?, sync = ? WHERE id = ? AND course = ?`;
+					tx.executeSql(sql, [draft.revisions, draft.factor, draft.review, today.current, 1, draft.id, course.short],
+						() => {
+							dispatch(decrementRevisions());
+							resolve();
+						},
+						() => {
+							alert('A atualização da última frase falhou.');
+							reject();
+						});
+				});
+			}
 		});
 	}
 
@@ -255,7 +258,7 @@ function Phrases({ route, navigation, theme }) {
 	}
 
 	async function handlePhrases() {
-		if (!end && !queue.length) {
+		if (!end.current && !queue.current.length) {
 			if (training)
 				await getTrain();
 			else
@@ -265,8 +268,6 @@ function Phrases({ route, navigation, theme }) {
 	}
 
 	useEffect(() => {
-		queue = [];
-
 		if (training) {
 			navigation.setOptions({ title: 'Treino' });
 		}

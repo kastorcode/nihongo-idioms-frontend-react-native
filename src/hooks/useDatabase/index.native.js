@@ -11,6 +11,7 @@ export default function useDatabase() {
 		FileSystem.getInfoAsync(DIR_DB).then(({ exists }) => {
 			if (!exists) {
 				const db = SQLite.openDatabase(DB_NAME);
+
 				db.transaction(tx => {
 					tx.executeSql(`CREATE TABLE IF NOT EXISTS ${DB_NAME} (
 						id INTEGER NOT NULL,

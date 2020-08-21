@@ -4,7 +4,7 @@ export default function useUpdateEffect(f, a = [], c = undefined) {
   const ref = useRef(0);
 
   useEffect(() => {
-    if (ref.current == 2) {
+    if (ref.current == 1) {
       f();
     }
     else {

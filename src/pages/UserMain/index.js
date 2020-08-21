@@ -41,8 +41,8 @@ function UserMain({ theme }) {
 	      autoplayInterval={30000}
 	      onSnapToItem={index => setIndex(index)}
 	      renderItem={({item}) => (
-	      	<MainAd onPress={() => handleMainAd(item.id)} activeOpacity={0.8}>
-	  				<MainAdImage source={item.img} resizeMode='stretch' theme={theme} />
+	      	<MainAd onPress={() => handleMainAd(item.id)} activeOpacity={0.6}>
+	  				<MainAdImage source={{ uri: item.img }} resizeMode='stretch' theme={theme} />
 	  			</MainAd>
 	      )}
 	  	/>
