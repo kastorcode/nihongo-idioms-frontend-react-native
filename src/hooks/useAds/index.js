@@ -1,3 +1,3 @@
 export default function useAds() {
-	return null;
+	return true;
 }

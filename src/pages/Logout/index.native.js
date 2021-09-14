@@ -13,8 +13,10 @@ import Background from '../../components/Background';
 import Loading from '../../components/Loading';
 
 export default function Logout({ navigation }) {
-  const { online } = useSelector(store => store);
-  const { session } = useSelector(store => store.auth);
+  const {
+    online,
+    auth: { session }
+  } = useSelector(store => store);
   const dispatch = useDispatch();
 
   async function makeLogout() {

@@ -6,6 +6,7 @@ import { Audio } from 'expo-av';
 import { useSelector } from 'react-redux';
 import { baseURL, DIR_SHADOWING } from '../../config';
 import api from '../../services/api';
+import { BannerAds, InterstitialAds } from '../../utils/ads';
 import HeaderRightIcons from '../../components/HeaderRightIcons';
 import Loading from '../../components/Loading';
 import Background from '../../components/Background';
@@ -18,9 +19,12 @@ import { IconsBox, Icon, TextBox, Original, Translation } from './style';
 
 function ShadowingText({ route, navigation, theme }) {
 	const [isLoading, setIsLoading] = useState(true);
-	const { online } = useSelector(store => store);
-	const { course } = useSelector(store => store.user);
-	const { session } = useSelector(store => store.auth);
+	const {
+		ads,
+		online,
+		auth: { session },
+		user:{ course }
+	} = useSelector(store => store);
 	const [show, setShow] = useState(false);
 	const [text, setText] = useState([]);
 	const [sound, setSound] = useState(null);
@@ -90,6 +94,9 @@ function ShadowingText({ route, navigation, theme }) {
 	}
 
 	useEffect(() => {
+		if (ads) {
+			InterstitialAds();
+		}
 		getShadowing();
 		getSound();
 	}, []);
@@ -112,6 +119,10 @@ function ShadowingText({ route, navigation, theme }) {
 			<Background>
 				<Container scroll={true}>
 					<Title>{ item.title }</Title>
+
+					{ ads ? (
+						<BannerAds style={{marginBottom:32}} theme={theme} />
+					) : null }
 
 					<IconsBox>
 						<ClickAnimation onPress={handleSound}>
@@ -141,6 +152,10 @@ function ShadowingText({ route, navigation, theme }) {
 						)
 					)) }
 					</TextBox>
+
+					{ ads ? (
+						<BannerAds style={{marginVertical:32}} theme={theme} />
+					) : null }
 				</Container>
 			</Background>
 		);

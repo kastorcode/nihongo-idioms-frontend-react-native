@@ -1,6 +1,6 @@
 import * as FileSystem from 'expo-file-system';
 
-export const baseURL = `http://192.168.0.11/nihongo-idiomas/backend`;
+export const baseURL = `http://192.168.0.11/nihongo-idioms-backend-php`;
 export const clientID = `207077854831-ncqrvt9c2u9s6dmgm4ppfijbrchv4kj7.apps.googleusercontent.com`;
 export const cryptoKEY = 'showdoIrandeDaTtEbayou';
 export const deepLink = 'nihongoidiomas://';

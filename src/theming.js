@@ -15,7 +15,7 @@ import useAnalytics from './hooks/useAnalytics';
 import Routes from './routes';
 
 export default function Theming() {
-	useAds();
+	const ads = useAds();
 	const login = useLoginStorage();
 	const theme = useTheme();
 	useOnline();
@@ -36,7 +36,7 @@ export default function Theming() {
 		}
 	}, [login]);
 
-	if (login) {
+	if (ads && login) {
 		return (
 			<ThemeProvider theme={theme}>
 				<StatusBar backgroundColor={theme.header.bg} />

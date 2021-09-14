@@ -29,8 +29,12 @@ import { ButtonsBox, Icon } from './style';
 
 function Premium({ navigation, theme }) {
 	const [isLoading, setIsLoading] = useState(true);
-	const { online, user } = useSelector(store => store);
-	const { session } = useSelector(store => store.auth);
+	const {
+		ads,
+		online,
+		user,
+		auth: { session }
+	} = useSelector(store => store);
 	const [premium, setPremium] = useState(null);
 	const [premiumDate, setPremiumDate] = useState(null);
 	const [images] = useState([

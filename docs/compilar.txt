@@ -1,0 +1,15 @@
+----
+WEB:
+revisar config
+expo build:web
+firebase init
+firebase deploy
+----
+
+--------
+ANDROID:
+revisar config
+Keystore: sudo keytool -genkeypair -v -keystore nihongo-idiomas-key.keystore -alias nihongo-idiomas-alias -keyalg RSA -keysize 2048 -validity 10000
+Senha Keystore: pao!X935izb
+npx react-native run-android --variant=release --verbose
+--------

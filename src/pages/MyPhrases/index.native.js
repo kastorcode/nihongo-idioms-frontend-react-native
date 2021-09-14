@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import * as SQLite from 'expo-sqlite';
 import { DB_NAME } from '../../config';
 import { offlineMessage } from '../../utils';
+import { BannerAds } from '../../utils/ads';
 import api from '../../services/api';
 import Background from '../../components/Background';
 import Container from '../../components/Container';
@@ -19,9 +20,12 @@ import { PhraseBox, PhraseHeader, PhraseText, PhraseBody, PhraseDate,
 
 function MyPhrases({ navigation, theme }) {
 	const [loading, setLoading] = useState(true);
-	const { online } = useSelector(store => store);
-	const { session } = useSelector(store => store.auth);
-	const { course } = useSelector(store => store.user);
+	const {
+		ads,
+		online,
+		auth: { session },
+		user: { course }
+	} = useSelector(store => store);
 	const [text, setText] = useState('');
 	const [phrases, setPhrases] = useState([]);
 	const [total, setTotal] = useState('...');
@@ -192,6 +196,38 @@ function MyPhrases({ navigation, theme }) {
 		});
 	}
 
+	function renderItem({ item, index }) {
+		const phrasebox = () => <PhraseBox theme={theme}>
+			<PhraseHeader theme={theme}>
+				<PhraseText theme={theme}>{ item.phrase }</PhraseText>
+			</PhraseHeader>
+			<PhraseBody>
+
+				<PhraseDate>
+					<PhraseText theme={theme}>{ item.last_revision }</PhraseText>
+				</PhraseDate>
+				<PhraseReviews>
+					<PhraseText theme={theme}>Revisões: { item.revisions }</PhraseText>
+				</PhraseReviews>
+				<PhraseDelete>
+					<TouchableOpacity
+						activeOpacity={0.6}
+						onPress={() => deletePhrase(index, item.id)}
+					>
+						<PhraseDeleteIcon name='trash' theme={theme} />
+					</TouchableOpacity>
+				</PhraseDelete>
+			</PhraseBody>
+		</PhraseBox>;
+
+		if (ads && !(index % 5)) {
+			return [<BannerAds style={{marginBottom:16}} theme={theme} />, phrasebox()];
+		}
+		else {
+			return phrasebox();
+		}
+	}
+
 	useEffect(() => {
 		getTotalPhrases();
 	}, []);
@@ -222,30 +258,7 @@ function MyPhrases({ navigation, theme }) {
 		        onEndReachedThreshold={0.1}
 		        onEndReached={handleEndScroll}
 		        keyExtractor={item => item.id.toString()}
-		        renderItem={({item, index}) => (
-		        	<PhraseBox theme={theme}>
-								<PhraseHeader theme={theme}>
-									<PhraseText theme={theme}>{ item.phrase }</PhraseText>
-								</PhraseHeader>
-								<PhraseBody>
-
-									<PhraseDate>
-										<PhraseText theme={theme}>{ item.last_revision }</PhraseText>
-									</PhraseDate>
-									<PhraseReviews>
-										<PhraseText theme={theme}>Revisões: { item.revisions }</PhraseText>
-									</PhraseReviews>
-									<PhraseDelete>
-										<TouchableOpacity
-											activeOpacity={0.6}
-											onPress={() => deletePhrase(index, item.id)}
-										>
-											<PhraseDeleteIcon name='trash' theme={theme} />
-										</TouchableOpacity>
-									</PhraseDelete>
-								</PhraseBody>
-							</PhraseBox>
-		        )}
+		        renderItem={renderItem}
 		      />
 				</PhraseList>
 			</Container>

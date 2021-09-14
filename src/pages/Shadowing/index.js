@@ -15,9 +15,12 @@ import ClickAnimation from '../../components/ClickAnimation';
 
 function Shadowing({ navigation, theme }) {
 	const [isLoading, setIsLoading] = useState(true);
-	const { online } = useSelector(store => store);
-	const { course } = useSelector(store => store.user);
-	const { session } = useSelector(store => store.auth);
+	const {
+		ads,
+		online,
+		auth: { session },
+		user: { course }
+	} = useSelector(store => store);
 	const [texts, setTexts] = useState({});
 
 	function navigate(item) {

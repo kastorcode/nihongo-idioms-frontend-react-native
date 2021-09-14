@@ -7,6 +7,7 @@ import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
 import { DB_NAME, baseURL, DIR_VOCABULARY } from '../../config';
 import { backReview, subtractDate, calculateDate, nextReview, tagWords } from '../../utils';
+import { BannerAds, InterstitialAds } from '../../utils/ads';
 import { decrementRevisions } from '../../store/revisions/actions';
 import { BigIcon } from '../../styles/global';
 import Background from '../../components/Background';
@@ -19,7 +20,10 @@ import { Original, Translation, Buttons, ShowButton, ButtonsBox, AgainButton,
 
 function Phrases({ route, navigation, theme }) {
 	const [isLoading, setIsLoading] = useState(true);
-	const { auto, course, repro } = useSelector(store => store.user);
+	const {
+		ads,
+		user: { auto, course, repro }
+	} = useSelector(store => store);
 	const [phrase, setPhrase] = useState(null);
 	const [disabled, setDisabled] = useState(false);
 	const yesterday = useRef(subtractDate(1));
@@ -268,6 +272,9 @@ function Phrases({ route, navigation, theme }) {
 	}
 
 	useEffect(() => {
+		if (ads) {
+			InterstitialAds();
+		}
 		if (training) {
 			navigation.setOptions({ title: 'Treino' });
 		}
@@ -335,6 +342,9 @@ function Phrases({ route, navigation, theme }) {
 				<Container center={true}>
 					<EmptyText theme={theme}>Nada para revisar</EmptyText>
 				</Container>
+				{ ads ? (
+					<BannerAds theme={theme} />
+				) : null }
 			</Background>
 		);
 	}

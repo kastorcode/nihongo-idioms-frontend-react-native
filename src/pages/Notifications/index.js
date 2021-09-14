@@ -20,8 +20,11 @@ import ModuleBox from '../../components/ModuleBox';
 function Notifications({ navigation, theme }) {
 	const [isLoading, setIsLoading] = useState(true);
 	const [waiting, setWaiting] = useState(true);
-	const { online } = useSelector(store => store);
-	const { session } = useSelector(store => store.auth);
+	const {
+		ads,
+		online,
+		auth: { session }
+	} = useSelector(store => store);
 	const [notices, setNotices] = useState([]);
 	const dispatch = useDispatch();
 

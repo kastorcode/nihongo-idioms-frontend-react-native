@@ -12,8 +12,11 @@ import Text from '../../components/Text';
 
 function Notification({ route, theme }) {
 	const [isLoading, setIsLoading] = useState(true);
-	const { online } = useSelector(store => store);
-	const { session } = useSelector(store => store.auth);
+	const {
+		ads,
+		online,
+		auth: { session }
+	} = useSelector(store => store);
 	const [content, setContent] = useState('');
 	const dispatch = useDispatch();
 	const { item } = route.params;

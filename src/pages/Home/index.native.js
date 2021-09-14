@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { withTheme } from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import Carousel from 'react-native-snap-carousel';
 import { EventRegister } from 'react-native-event-listeners';
 import Constants from 'expo-constants';
 import { clientID, redirectURI } from '../../config';
 import api from '../../services/api';
+import { BannerAds } from '../../utils/ads';
 import { changeAds } from '../../store/ads/actions';
 import { authLogin } from '../../store/auth/actions';
 import { userLogin } from '../../store/user/actions';
@@ -16,7 +18,7 @@ import logo from '../../assets/images/logo-transparent.png';
 import { Container, BackgroundImage, Header, HeaderBox1,
 	Logo, Title, HeaderBox2, LoginButton, Body, Phrase, Browser } from './style';
 
-export default function Home() {
+function Home({ theme }) {
   const [load, setLoad] = useState('H');
   const { online } = useSelector(store => store);
 	const [phrases] = useState([
@@ -122,6 +124,8 @@ export default function Home() {
               )}
             />
           </Body>
+
+          <BannerAds theme={theme} />
         </Container>
       );
     }
@@ -145,3 +149,5 @@ export default function Home() {
     }
   }
 }
+
+export default withTheme(Home);

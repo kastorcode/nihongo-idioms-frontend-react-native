@@ -7,7 +7,7 @@ function Question({ onPress, ask, replies, theme }) {
 	return (
 		<ClickAnimation
 			onPress={onPress}
-			style={{ marginBottom: 14 }}
+			style={{ marginBottom: 16 }}
 		>
 			<Container theme={theme}>
 				<Ask>

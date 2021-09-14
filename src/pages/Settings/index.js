@@ -20,8 +20,12 @@ import Toggle from '../../components/Toggle';
 import MenuPopover from '../../components/MenuPopover';
 
 function Settings({ ctx, navigation, theme }) {
-	const { ads, online, user } = useSelector(store => store);
-	const { premium, session } = useSelector(store => store.auth);
+	const {
+		ads,
+		online,
+		user,
+		auth: { premium, session }
+	} = useSelector(store => store);
 	const [waiting, setWaiting] = useState(false);
 	const [userName, setUserName] = useState(user.name);
 	const [userTheme, setUserTheme] = useState(user.theme);
@@ -247,6 +251,7 @@ function Settings({ ctx, navigation, theme }) {
       		text='Mudar'
       		onChangeText={value => setUserName(value)}
       		onSubmitEditing={changeName}
+      		style={{marginBottom:24}}
       	/>
 
       	<Toggle

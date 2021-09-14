@@ -11,8 +11,11 @@ import ClickAnimation from '../../components/ClickAnimation';
 import { InputBox, ClickAnimationStyle } from './style'
 
 function AddPhrase({ theme }) {
-	const { online } = useSelector(store => store);
-	const { session } = useSelector(store => store.auth);
+	const {
+		online,
+		auth: { session },
+		user: { course }
+	} = useSelector(store => store);
 	const phraseRef = useRef();
 	const translationRef = useRef();
 
@@ -31,7 +34,7 @@ function AddPhrase({ theme }) {
 			setLoading(true);
 			try {
 				await api.get(`/addPhrase`, {
-					params: { phrase, translation, session }
+					params: { session, course: course.short, phrase, translation }
 				});
 				setPhrase('');
 				setTranslation('');

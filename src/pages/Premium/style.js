@@ -5,7 +5,7 @@ export const ButtonsBox = styled.View`
 	width: 100%;
 	flex-direction: row;
 	justify-content: flex-end;
-	margin: 12px 0;
+	margin-bottom: 28px;
 `;
 
 export const Icon = styled(FontAwesome5)`

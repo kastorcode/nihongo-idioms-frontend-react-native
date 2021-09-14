@@ -3,9 +3,9 @@ import { withTheme } from 'styled-components';
 import ClickAnimation from '../ClickAnimation';
 import { View, TextInput, Button } from './style';
 
-function SearchBox({ theme, onChangeText, onSubmitEditing, loading, keyboardType='default', maxLength=100, placeholder='', value='', text='Procurar' }) {
+function SearchBox({ theme, onChangeText, onSubmitEditing, loading, style, keyboardType='default', maxLength=100, placeholder='', value='', text='Procurar' }) {
 	return (
-		<View>
+		<View style={style}>
 			<TextInput
 	      theme={theme}
 	      placeholder={placeholder}

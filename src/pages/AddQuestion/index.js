@@ -10,10 +10,12 @@ import ClickAnimation from '../../components/ClickAnimation';
 import { InputBox, TextInput1, TextArea, Button1 } from '../../styles/global';
 
 function AddQuestion({ theme }) {
-	const { online } = useSelector(store => store);
-	const { session } = useSelector(store => store.auth);
-	const { avatar, course } = useSelector(store => store.user);
-	
+	const {
+		online,
+		auth: { session },
+		user: { avatar, course }
+	} = useSelector(store => store);
+
 	const [isLoading, setIsLoading] = useState(false);
 	const [question, setQuestion] = useState('');
 	const [content, setContent] = useState('');
@@ -77,7 +79,7 @@ function AddQuestion({ theme }) {
 				      textAlignVertical='top'
 				      onChangeText={value => setContent(value)}
 				      maxLength={2000}
-				      placeholder={`Tags suportadas: <audio> <iframe> <img> <video>\nTamanho entre 18 e 2000 caracteres`}
+				      placeholder={`Tamanho entre 18 e 2000 caracteres\n<a>áudio</a>\n<l>link</l>\n<p>imagem</p>`}
 				      placeholderTextColor={theme.placeholder}
 				      value={content}
 				      returnKeyType='send'

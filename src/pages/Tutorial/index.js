@@ -18,7 +18,10 @@ function Tutorial({ route, theme }) {
 	const [isLoading, setIsLoading] = useState(true);
 	const [topic, setTopic] = useState(route.params.topic);
 	const [topics, setTopics] = useState([]);
-	const { online } = useSelector(store => store);
+	const {
+		ads,
+		online
+	} = useSelector(store => store);
 
 	async function getTutorial() {
 		try {

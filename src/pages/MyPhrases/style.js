@@ -4,7 +4,7 @@ import { Button1 } from '../../styles/global';
 
 export const PhraseBox = styled.View`
 	width: 100%;
-	margin-bottom: 12px;
+	margin-bottom: 16px;
 	border: 2px solid ${({theme}) => theme.phrase.border};
 `;
 

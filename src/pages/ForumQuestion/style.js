@@ -1,4 +1,5 @@
 import styled from 'styled-components/native';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 export const QuestionBox = styled.View`
 	width: 100%;
@@ -47,7 +48,20 @@ export const Text = styled.Text`
 	margin-right: 8px;
 `;
 
-export const QuestionBody = styled.View``;
+export const DeleteQuestion = styled.TouchableOpacity`
+	width: 28px;
+	height: 28px;
+	align-items: center;
+	justify-content: center;
+`;
+
+export const DeleteIcon = styled(FontAwesome5)`
+	font-size: ${({theme}) => theme.font.normal};
+	color: ${({theme}) => theme.text};
+`;
+
+export const QuestionBody = styled.View`
+`;
 
 export const Content = styled.Text`
 	font-family: ${({theme}) => theme.font.regular};

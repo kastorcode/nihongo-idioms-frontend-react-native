@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FlatList } from 'react-native';
 import { withTheme } from 'styled-components';
 import { useSelector } from 'react-redux';
+import HTMLView from 'react-native-htmlview';
 import api from '../../services/api';
 import HeaderRightIcon from '../../components/HeaderRightIcon';
 import Background from '../../components/Background';
@@ -10,9 +11,12 @@ import NoInternet from '../../components/NoInternet';
 import Container from '../../components/Container';
 import ClickAnimation from '../../components/ClickAnimation';
 import ListContainer from '../../components/ListContainer';
+import AudioBlock from '../../components/AudioBlock';
+import ImageBlock from '../../components/ImageBlock';
+import LinkBlock from '../../components/LinkBlock';
 import { Button2 } from '../../styles/global';
 import { QuestionBox, QuestionHeader, QuestionAvatar, Avatar, QuestionText, Title,
-	QuestionTextBox, Text, QuestionBody, Content, ReplyBox, ReplyInput, Input, AnswerBox } from './style';
+	QuestionTextBox, Text, DeleteQuestion, DeleteIcon, QuestionBody, Content, ReplyBox, ReplyInput, Input, AnswerBox } from './style';
 
 function ForumQuestion({ route, navigation, theme }) {
 	navigation.setOptions({
@@ -20,9 +24,11 @@ function ForumQuestion({ route, navigation, theme }) {
 	});
 
 	const [isLoading, setIsLoading] = useState(true);
-	const { online } = useSelector(store => store);
-	const { session } = useSelector(store => store.auth);
-	const { avatar } = useSelector(store => store.user);
+	const {
+		online,
+		auth: { id: user_id, session },
+		user: { avatar }
+	} = useSelector(store => store);
 
 	const [waiting, setWaiting] = useState(false);
 	const [reply, setReply] = useState('');
@@ -33,7 +39,45 @@ function ForumQuestion({ route, navigation, theme }) {
 
 	const { id, ask } = route.params;
 
-	function Answer({ avatar, name, date, reply }) {
+	function renderNode(node) {
+		switch (node.type) {
+			case 'text': {
+				return <Content theme={theme}>{node.data}</Content>;
+			}
+			default: {
+				switch (node.name) {
+					case 'a': {
+						return <AudioBlock uri={node.children[0].data} />;
+					}
+					case 'l': {
+						return <LinkBlock uri={node.children[0].data} />;
+					}
+					case 'p': {
+						return <ImageBlock uri={node.children[0].data} />;
+					}
+				}
+			}
+		}
+	}
+
+	async function deleteReply(id) {
+		if (confirm('Confirmar exclusão?')) {
+			setReplies(replies.filter(item => {
+				return id != item.id;
+			}));
+
+			try {
+				await api.get(`/deleteReply`, {
+					params: { session, id }
+				});
+			}
+			catch (error) {
+				alert('Falha na exclusão.');
+			}
+		}
+	}
+
+	function Answer({ avatar, date, id, name, reply, user }) {
 		return (
 			<AnswerBox theme={theme}>
 				<QuestionHeader>
@@ -50,10 +94,22 @@ function ForumQuestion({ route, navigation, theme }) {
 						<Text theme={theme}>{ name }</Text>
 						<Text theme={theme}>{ date }</Text>
 					</QuestionText>
+
+					{ user_id == user ? (
+						<DeleteQuestion
+							activeOpacity={0.6}
+							onPress={() => deleteReply(id)}
+						>
+							<DeleteIcon name='trash' theme={theme} />
+						</DeleteQuestion>
+					) : null }
 				</QuestionHeader>
 
 				<QuestionBody>
-					<Content theme={theme}>{ reply }</Content>
+					<HTMLView
+						value={reply}
+						renderNode={renderNode}
+				  />
 				</QuestionBody>
 			</AnswerBox>
 		);
@@ -127,6 +183,19 @@ function ForumQuestion({ route, navigation, theme }) {
 		}
 	}
 
+	async function deleteQuestion() {
+		if (confirm('Confirmar exclusão?')) {
+			try {
+				await api.get(`/deleteQuestion`, {
+					params: { session, id }
+				});
+			}
+			catch (error) {
+				alert('Falha na exclusão.');
+			}
+		}
+	}
+
 	function scrollToReply() {
 		replyRef.current.focus();
 	}
@@ -165,10 +234,22 @@ function ForumQuestion({ route, navigation, theme }) {
 									<Text theme={theme}>{ question.date }</Text>
 								</QuestionTextBox>
 							</QuestionText>
+
+							{ user_id == question.user_id ? (
+								<DeleteQuestion
+									activeOpacity={0.6}
+									onPress={deleteQuestion}
+								>
+									<DeleteIcon name='trash' theme={theme} />
+								</DeleteQuestion>
+							) : null }
 						</QuestionHeader>
 
 						<QuestionBody>
-							<Content theme={theme}>{ question.content }</Content>
+							<HTMLView
+								value={question.content}
+								renderNode={renderNode}
+				  		/>
 						</QuestionBody>
 					</QuestionBox>
 
@@ -188,7 +269,7 @@ function ForumQuestion({ route, navigation, theme }) {
 					      theme={theme}
 					      multiline={true}
 					      textAlignVertical='top'
-					      placeholder={`Deixar uma resposta...\nTags suportadas: <audio> <iframe> <img> <video>\nTamanho entre 20 e 2000 caracteres.`}
+					      placeholder={`Deixar uma resposta...\nTamanho entre 20 e 2000 caracteres.\n<a>áudio</a> <l>link</l> <p>imagem</p>`}
 					      placeholderTextColor={theme.placeholder}
 					      maxLength={2000}
 					      value={reply}
@@ -214,9 +295,11 @@ function ForumQuestion({ route, navigation, theme }) {
 			        renderItem={({item}) => (
 			        	<Answer
 			        		avatar={item.avatar}
-			        		name={item.name}
 			        		date={item.date}
+			        		id={item.id}
+			        		name={item.name}
 			        		reply={item.reply}
+			        		user={item.user_id}
 			        	/>
 			        )}
 			      />

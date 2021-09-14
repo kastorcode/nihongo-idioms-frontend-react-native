@@ -12,9 +12,12 @@ import { PhraseList, PhraseBox, OriginalPhrase, PhraseText,
 	PhraseTranslation } from '../../styles/global';
 
 function SearchPhrases({ theme }) {
-	const { online } = useSelector(store => store);
-	const { session } = useSelector(store => store.auth);
-	const { course } = useSelector(store => store.user);
+	const {
+		ads,
+		online,
+		auth: { session },
+		user: { course }
+	} = useSelector(store => store);
 	const [loading, setLoading] = useState(false);
 	const [text, setText] = useState('');
 	const [phrases, setPhrases] = useState([]);

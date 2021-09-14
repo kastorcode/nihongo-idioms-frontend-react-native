@@ -14,9 +14,12 @@ import { ModulesList, ModuleBox, ModuleText } from '../../styles/global';
 
 function Modules({ navigation, theme }) {
 	const [isLoading, setIsLoading] = useState(false);
-	const { online } = useSelector(store => store);
-	const { course } = useSelector(store => store.user);
-	const { session } = useSelector(store => store.auth);
+	const {
+		ads,
+		online,
+		auth: { session },
+		user: { course }
+	} = useSelector(store => store);
 	const [courseModules, setCourseModules] = useState([]);
 
 	function navigate(index, courseModule) {

@@ -14,9 +14,12 @@ import { ExplanationBox, ExplanationText } from './style';
 
 function Module({ route, theme }) {
 	const [isLoading, setIsLoading] = useState(false);
-	const { online } = useSelector(store => store);
-	const { course } = useSelector(store => store.user);
-	const { session } = useSelector(store => store.auth);
+	const {
+		ads,
+		online,
+		auth: { session },
+		user: { course }
+	} = useSelector(store => store);
 	const [explanation, setExplanation] = useState('');
 	const [phrases, setPhrases] = useState([]);
 	const { index, courseModule } = route.params;

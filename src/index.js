@@ -3,7 +3,6 @@ import { useFonts } from '@use-expo/font';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import { MenuProvider } from 'react-native-popup-menu';
-import { AppLoading } from 'expo';
 import Theming from './theming';
 
 export default function Index() {
@@ -12,18 +11,11 @@ export default function Index() {
 	  'DINNextRoundedLTPro-Bold': require('./assets/fonts/DINNextRoundedLTPro-Bold.ttf')
   });
 
-  if (fontsLoaded) {
-  	return (
-  		<Provider store={store}>
-        <MenuProvider backHandler={true}>
-    		  <Theming />
-        </MenuProvider>
-    	</Provider>
-  	);
-  }
-  else {
-  	return (
-  		<AppLoading />
-  	);
-  }
+	return (
+		<Provider store={store}>
+      <MenuProvider backHandler={true}>
+  		  <Theming />
+      </MenuProvider>
+  	</Provider>
+	);
 }

@@ -17,15 +17,17 @@ import Question from '../../components/Question';
 
 function Forum({ navigation, theme }) {
 	const [isLoading, setIsLoading] = useState(true);
-	const { online } = useSelector(store => store);
+	const {
+		online,
+		auth: { session },
+		user: { course }
+	} = useSelector(store => store);
 	const [fetching, setFetching] = useState(false);
 	const [end, setEnd] = useState(false);
 	const [scroll, setScroll] = useState('getQuestions');
 	const [text, setText] = useState('');
 	const [title, setTitle] = useState('Fórum');
 	const [questions, setQuestions] = useState([]);
-	const { session } = useSelector(store => store.auth);
-	const { course } = useSelector(store => store.user);
 	const { navigate } = navigation;
 
 	function goTo(id, ask) {

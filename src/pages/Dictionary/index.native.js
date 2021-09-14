@@ -1,13 +1,18 @@
 import React, { useCallback } from 'react';
+import { withTheme } from 'styled-components';
 import { useSelector } from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
 import { EventRegister } from 'react-native-event-listeners';
+import { BannerAds } from '../../utils/ads';
 import NoInternet from '../../components/NoInternet';
 import { Browser } from './style';
 
-export default function Dictionary({ route }) {
-	const { online } = useSelector(store => store);
-	const { course } = useSelector(store => store.user);
+function Dictionary({ route, theme }) {
+	const {
+		ads,
+		online,
+		user: { course }
+	} = useSelector(store => store);
 	const { word } = route.params;
 
 	useFocusEffect(
@@ -18,11 +23,16 @@ export default function Dictionary({ route }) {
 
 	if (online) {
 		return (
+			<>
 			<Browser
 	    	source={{
 	    		uri: course.dicio.replace('{word}', word)
 	    	}}
 	    />
+	    { ads ? (
+				<BannerAds theme={theme} />
+			) : null }
+			</>
 		);
 	}
 	else {
@@ -31,3 +41,5 @@ export default function Dictionary({ route }) {
 		);
 	}
 }
+
+export default withTheme(Dictionary);

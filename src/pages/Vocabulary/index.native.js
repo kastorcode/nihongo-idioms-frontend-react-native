@@ -8,6 +8,7 @@ import { EventRegister } from 'react-native-event-listeners';
 import { DB_NAME } from '../../config';
 import { offlineMessage } from '../../utils';
 import api from '../../services/api';
+import { BannerAds, InterstitialAds } from '../../utils/ads';
 import Header from '../../components/Header';
 import RightMenuText from '../../components/RightMenuText';
 import Background from '../../components/Background';
@@ -17,10 +18,12 @@ import { Revisions, RevisionsBox1, RevisionsTitle, MenuStyle, MenuTriggerStyles,
 
 function Vocabulary({ ctx, theme }) {
 	const [isLoading, setIsLoading] = useState(false);
-	const { online } = useSelector(store => store);
-	const { session } = useSelector(store => store.auth);
-	const { course } = useSelector(store => store.user);
-	const { quantity } = useSelector(store => store.revisions);
+	const {
+		ads, online,
+		auth: { session },
+		revisions: { quantity },
+		user: { course }
+	} = useSelector(store => store);
 	const dispatch = useDispatch();
 	const navigation = useNavigation();
 	const [progress, setProgress] = useState(0);
@@ -247,6 +250,10 @@ function Vocabulary({ ctx, theme }) {
 				<Header />
 
 				<Container>
+					{ ads ? (
+						<BannerAds style={{marginBottom:32}} theme={theme} />
+					) : null }
+
 					<Revisions theme={theme}>
 						<RevisionsBox1
 							theme={theme}
@@ -293,6 +300,10 @@ function Vocabulary({ ctx, theme }) {
 						</ClickAnimation>
 					</VocabularyMenu>
 				</Container>
+
+				{ ads ? (
+					<BannerAds theme={theme} />
+				) : null }
 			</Background>
 		);
 	}
